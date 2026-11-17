@@ -1,77 +1,63 @@
 package vn.edu.vlsc.lab3
 
-
 import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.LinearLayoutManager
-import vn.edu.vlsc.lab3.adapter.StudentAdapter
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import vn.edu.vlsc.lab3.databinding.ActivityMainBinding
-import vn.edu.vlsc.lab3.model.Student
+
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
-    private val studentAdapter = StudentAdapter { student -> showStudentToast(student) }
 
+    private lateinit var binding: ActivityMainBinding
+    private var isCounting = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        // Button 1: Gây lỗi ANR (Chặn Main Thread)
+        binding.btnBlockThread.setOnClickListener {
+            binding.tvStatus.text = "Trạng thái: Đang xử lý nặng (Gây đơ UI)..."
+            // Sleep chặn đứng luồng chính 5 giây (ProgressBar sẽ đứng im)
+            Thread.sleep(5000)
+            binding.tvStatus.text = "Trạng thái: Xử lý xong (Main Thread)!"
+        }
+        // Button 2: Giải pháp với Kotlin Coroutines
+        binding.btnRunCoroutine.setOnClickListener {
+            binding.tvStatus.text = "Trạng thái: Đang xử lý ngầm bằng Coroutines..."
+            // Khởi chạy Coroutine theo vòng đời Activity
+            lifecycleScope.launch(Dispatchers.IO) {
+                // Gọi hàm xử lý nặng (suspend) trên luồng IO
+                val result = doHeavyCalculation()
 
-        applyWindowInsets()
-        setupRecyclerView()
-        studentAdapter.submitList(getSampleStudents())
-        var currentList = getSampleStudents()
-        binding.tvTitle.setOnClickListener {
-            currentList = currentList.drop(1) // Tạo danh sách MỚI bằng cách bỏ phần tử đầu tiên
-            studentAdapter.submitList(currentList)
+                // Chuyển luồng cập nhật giao diện an toàn (Main)
+                withContext(Dispatchers.Main) {
+                    binding.tvStatus.text = result
+                }
+            }
+        }
+        startCountdownTimer()
+    }
+    // Hàm suspend chạy ngầm không chặn luồng
+    private suspend fun doHeavyCalculation(): String {
+        delay(5000) // Tạm dừng an toàn 5 giây, trả CPU cho UI
+        return "Trạng thái: Xử lý xong mượt mà (Coroutines)!"
+    }
+    // Đồng hồ đếm ngược bất đồng bộ
+    private fun startCountdownTimer() {
+        if (isCounting) return
+        isCounting = true
+
+        lifecycleScope.launch(Dispatchers.Main) {
+            for (i in 60 downTo 1) {
+                binding.tvCountdown.text = "Thời gian: $i s"
+                delay(1000) // Đợi 1 giây, ProgressBar vẫn xoay mượt mà
+            }
+            binding.tvCountdown.text = "Thời gian: Hết giờ!"
+            isCounting = false
         }
     }
-
-    private fun applyWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val types = WindowInsetsCompat.Type.systemBars() or
-                    WindowInsetsCompat.Type.displayCutout()
-            val bars = insets.getInsets(types)
-            view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
-            insets
-        }
-    }
-
-    private fun setupRecyclerView() {
-        binding.rvStudents.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = studentAdapter
-            setHasFixedSize(true)
-        }
-    }
-
-    private fun showStudentToast(student: Student) {
-        Toast.makeText(
-            this,
-            getString(R.string.student_selected, student.name, student.mssv),
-            Toast.LENGTH_SHORT
-        ).show()
-    }
-
-    private fun getSampleStudents(): List<Student> {
-        val avatar = R.mipmap.ic_launcher_round
-        return listOf(
-            Student(1, "Nguyễn Văn An", "2024001", avatar),
-            Student(2, "Trần Thị Bình", "2024002", avatar),
-            Student(3, "Lê Hoàng Cường", "2024003", avatar),
-            Student(4, "Phạm Thu Dung", "2024004", avatar),
-            Student(5, "Hoàng Minh Đức", "2024005", avatar),
-            Student(6, "Vũ Thị Hoa", "2024006", avatar),
-            Student(7, "Đặng Quốc Hùng", "2024007", avatar),
-            Student(8, "Bùi Khánh Linh", "2024008", avatar),
-            Student(9, "Ngô Tuấn Minh", "2024009", avatar),
-            Student(10, "Đỗ Thùy Trang", "2024010", avatar)
-        )
-    }
-
 }

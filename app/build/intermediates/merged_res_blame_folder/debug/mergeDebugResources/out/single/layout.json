@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "vn.edu.vlsc.lab3.app-mergeDebugResources-39:/layout/activity_main.xml",
+        "source": "vn.edu.vlsc.lab3.app-main-42:/layout/activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\9.6.0\\vn.edu.vlsc.lab3.app-mergeDebugResources-39:\\layout\\activity_main.xml",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\9.6.0\\vn.edu.vlsc.lab3.app-main-42:\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\PC\\.gradle\\daemon\\9.6.0\\vn.edu.vlsc.lab3.app-mergeDebugResources-39:\\layout\\item_student.xml",
+        "source": "C:\\Users\\PC\\.gradle\\daemon\\9.6.0\\vn.edu.vlsc.lab3.app-main-42:\\layout\\item_student.xml"
+    }
+]

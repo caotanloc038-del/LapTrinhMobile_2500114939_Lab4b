@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <string name="app_name">Lab3</string>
+    <string name="student_mssv">MSSV: %1%s</string>
+    <string name="student_selected">Bạn đã chọn: %1$s - %2$s</string>
+    <string name="title_student_list">DANH SÁCH SINH VIÊN</string>
+    <style name="Base.Theme.Lab3" parent="Theme.Material3.DayNight.NoActionBar">
+        
+        
+    </style>
+    <style name="Theme.Lab3" parent="Base.Theme.Lab3"/>
+</resources>
